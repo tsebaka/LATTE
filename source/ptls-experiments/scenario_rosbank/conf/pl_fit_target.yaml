@@ -1,0 +1,58 @@
+defaults:
+  - _self_
+  - data_module_supervised/default@data_module
+  - pl_module/defaults
+
+seed_everything: 42
+logger_name: target_scores
+fold_list:
+  _target_: embeddings_validation.get_fold_list
+  config_path: conf/embeddings_validation_baselines_supervised.yaml
+fold_id: _
+
+embedding_validation_results:
+  model_name: nn
+  feature_name: target_scores
+  output_path: ${hydra:runtime.cwd}/results/fit_target_results.json
+
+trainer:
+  gpus: 1
+  auto_select_gpus: false
+  max_epochs: 10
+  enable_checkpointing: false
+  deterministic: true
+
+pl_module:
+  seq_encoder:
+    _target_: ptls.nn.RnnSeqEncoder
+    trx_encoder:
+      _target_: ptls.nn.TrxEncoder
+      use_batch_norm_with_lens: true
+      norm_embeddings: false
+      embeddings_noise: 0.0003
+      embeddings: 
+        mcc: 
+          in: 100
+          out: 24
+        channel_type: 
+          in: 4
+          out: 4
+        currency: 
+          in: 4
+          out: 4
+        trx_category: 
+          in: 10
+          out: 4
+      numeric_values: 
+        amount: identity
+    hidden_size: 48
+    type: gru
+    bidir: false
+    trainable_starter: static
+  head:
+    input_size: ${pl_module.seq_encoder.hidden_size}
+  lr_scheduler_partial:
+    _partial_: true
+    _target_: torch.optim.lr_scheduler.StepLR
+    step_size: 3
+    gamma: 0.25

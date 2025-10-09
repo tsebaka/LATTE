@@ -1,0 +1,67 @@
+defaults:
+  - _self_
+  - data_module_supervised/default@data_module
+  - pl_module/defaults
+
+seed_everything: 42
+logger_name: target_scores
+fold_list:
+  _target_: embeddings_validation.get_fold_list
+  config_path: conf/embeddings_validation_baselines_supervised.yaml
+fold_id: _
+
+embedding_validation_results: 
+  model_name: nn
+  feature_name: target_scores
+  output_path: ${hydra:runtime.cwd}/results/fit_target_results.json
+
+trainer:
+  gpus: 1
+  auto_select_gpus: false
+  max_epochs: 35
+  enable_checkpointing: false
+  deterministic: true
+
+pl_module:
+  seq_encoder:
+    _target_: ptls.nn.RnnSeqEncoder
+    hidden_size: 32
+    type: gru
+    bidir: false
+    trainable_starter: static
+    trx_encoder: 
+      _target_: ptls.nn.TrxEncoder
+      norm_embeddings: false
+      embeddings_noise: 0.003
+      embeddings: 
+        event_id: 
+          in: 500
+          out: 16
+        event_code: 
+          in: 50
+          out: 8
+        event_type: 
+          in: 6
+          out: 8
+        title: 
+          in: 50
+          out: 8
+        world: 
+          in: 6
+          out: 8
+        correct: 
+          in: 4
+          out: 2
+      numeric_values: {}
+  head:
+    input_size: ${pl_module.seq_encoder.hidden_size}
+  optimizer_partial:
+    _partial_: true
+    _target_: torch.optim.Adam
+    lr: 0.01
+    weight_decay: 0.0
+  lr_scheduler_partial:
+    _partial_: true
+    _target_: torch.optim.lr_scheduler.StepLR
+    step_size: 5
+    gamma: 0.5

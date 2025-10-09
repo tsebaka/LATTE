@@ -1,0 +1,81 @@
+defaults:
+  - _self_
+  - dataset_unsupervised/parquet
+  - inference/default
+  - inference/seq_encoder/pretrained
+
+seed_everything: 42
+logger_name: nsp_model
+model_path: models/nsp_model.p
+embed_file_name: nsp_embeddings
+
+data_module:
+  _target_: ptls.frames.PtlsDataModule
+  train_data:
+    _target_: ptls.frames.bert.NspDataset
+    splitter:
+      _target_: ptls.frames.coles.split_strategy.SampleSlices
+      split_count: 3
+      cnt_min: 60
+      cnt_max: 360
+    data: ${dataset_unsupervised.train}
+  valid_data:
+    _target_: ptls.frames.bert.NspDataset
+    splitter:
+      _target_: ptls.frames.coles.split_strategy.SampleSlices
+      split_count: 3
+      cnt_min: 30
+      cnt_max: 180
+    data: ${dataset_unsupervised.valid}
+  train_batch_size: 128
+  train_num_workers: 8
+  valid_batch_size: 128
+  valid_num_workers: 16
+
+trainer:
+  gpus: 1
+  auto_select_gpus: false
+  max_epochs: 10
+  deterministic: true
+
+pl_module:
+  _target_: ptls.frames.bert.SopNspModule
+  seq_encoder:
+    _target_: ptls.nn.RnnSeqEncoder
+    trx_encoder:
+      _target_: ptls.nn.TrxEncoder
+      norm_embeddings: false
+      embeddings_noise: 0.003
+      embeddings: 
+        level_3: 
+          in: 200
+          out: 16
+        level_4: 
+          in: 800
+          out: 16
+        segment_id: 
+          in: 120
+          out: 16
+      numeric_values: 
+        trn_sum_from_iss: identity
+        netto: identity
+        regular_points_received: identity
+    type: gru
+    hidden_size: 800
+    bidir: false
+    trainable_starter: static
+  hidden_size: 512
+  drop_p: 0.5
+  optimizer_partial:
+    _partial_: true
+    _target_: torch.optim.Adam
+    lr: 0.002
+    weight_decay: 0.0
+  lr_scheduler_partial:
+    _partial_: true
+    _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+    mode: max
+    patience: 2
+    threshold: 0.001
+    min_lr: 1e-6
+    verbose: true

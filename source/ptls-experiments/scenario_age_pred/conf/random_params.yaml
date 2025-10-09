@@ -1,0 +1,7 @@
+defaults:
+  - _self_
+  - inference/default
+  - inference/seq_encoder/random_rnn
+
+seed_everything: 42
+embed_file_name: random_embeddings

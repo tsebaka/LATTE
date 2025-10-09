@@ -1,0 +1,7 @@
+defaults:
+  - _self_
+  - inference/default
+  - inference/seq_encoder/agg_feature
+
+seed_everything: 42
+embed_file_name: agg_feat_embed

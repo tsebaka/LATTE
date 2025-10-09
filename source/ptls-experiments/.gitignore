@@ -1,0 +1,23 @@
+.idea
+.vscode
+__pycache__
+data
+*/models/*
+.pytest_cache
+opends/logs
+deb.env
+.ipynb_checkpoints
+*/runs
+*.egg-info
+.DS_Store
+lightning_logs
+*/conf/embeddings_validation*.work
+*/embeddings_validation*.work
+.coverage
+dist
+build
+outputs
+.p
+
+# *.log
+*.code-workspace
