@@ -1,8 +1,0 @@
-[submodule "source/llm-foundry"]
-	path = source/llm-foundry
-	url = https://github.com/tsebaka/llm-foundry
-	branch = main
-[submodule "source/ptls-experiments"]
-	path = source/ptls-experiments
-	url = https://github.com/dllllb/ptls-experiments.git
-	branch = main

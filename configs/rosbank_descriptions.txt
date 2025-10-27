@@ -1,0 +1,52 @@
+variables:
+    exp_name: rosbank_base
+    global_seed: 42
+    dataset_name: rosbank
+    col_id: cl_id
+    path_to_input_text: data/rosbank/statistics/rosbank_stats.csv
+    path_to_inference: data/rosbank/descriptions/rosbank_descriotions.csv
+    embeddings_save_path: data/rosbank/embeddings/${variables.exp_name}.parquet
+
+# Models
+models:
+    description_model:
+        path: google/gemma-3-27b-it
+    embedding_model:
+        path: Qwen/Qwen3-Embedding-8B
+        pooling: 30
+
+# Dataset
+dataset:
+    name: ${variables.dataset_name}
+    col_id: ${variables.col_id}
+
+# Text generation
+chat_messages:
+    system: >
+        You are an expert in financial transaction analysis.
+        ⚠️ Do **not** include introductory phrases like "Here's a financial behavior description for User X" or "Based on the provided data."
+        ⚠️ Keep responses **factual, structured, and data-driven** without making assumptions beyond the provided data.
+    user: >
+        The summary of the user's transaction history is provided below.
+        ### Instructions:
+        - **Analyze behavioral patterns** based on the statistics.
+        - **Identify transaction regularity** (e.g., consistent spending, seasonal trends, impulse purchases).
+        - **Determine reliance on certain categories** (e.g., is spending concentrated in one or two areas, or is it well-diversified?).
+        - **Assess potential risk factors** (e.g., irregular spending, high single-category reliance, inconsistent income flow).
+        - **Identify financial planning traits** (e.g., stable spending habits vs. erratic transactions).
+        - **Write in a structured and engaging way** while staying factual.
+        - Keep the description **brief and concise**.
+        - ⚠️ Start **directly** with the financial behavior insights.
+        - ⚠️ Interpret numerical statistics **into meaningful behavioral patterns** rather than just restating them.
+        - ⚠️ Highlight **spending habits, preferred transaction methods, risk patterns, and financial consistency**.
+        - ⚠️ If applicable, discuss whether spending habits indicate **financial stability, risk-taking behavior, or specific lifestyle patterns**.
+        The summary of the user's transaction history:
+    path_to_input_text: ${variables.path_to_input_text}
+
+sampling:
+    temperature: 0.6
+    top_p: 0.9
+    max_tokens: 8192
+
+# System
+seed: ${variables.global_seed}

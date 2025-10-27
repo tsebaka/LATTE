@@ -1,8 +1,7 @@
 #!/bin/bash
 
-dataset_name=''
 
-CONFIG=${dataset_name}_descriptions.yaml
+CONFIG=rosbank_descriptions.yaml
 
 python generate_descriptions.py \
     --config-dir configs \
