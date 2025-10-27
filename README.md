@@ -1,4 +1,4 @@
-# LLM4ES
+# LATTE
 <p align="center">
-  <img src="assets/LATTE_pipeline.jpg" alt="llm4es" width="500"/>
+  <img src="assets/LATTE_pipeline.jpg" alt="latte" width="500"/>
 </p>
