@@ -53,7 +53,7 @@ cd ..
 
 1. Generate descriptions and inference them:
 ```sh
-bash run.sh
+bash scripts/run_scenario_rosbank.sh
 ```
 2. Generate statisctics
 ```sh
