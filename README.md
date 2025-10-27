@@ -49,3 +49,14 @@ cd ..
 ```
 
 
+### llm-foundry training
+
+1. Generate descriptions and inference them:
+```sh
+bash run.sh
+```
+2. Generate statisctics
+```sh
+# for rosbank dataset
+run notebooks/scenario_rosbank.ipynb
+```
