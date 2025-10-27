@@ -53,6 +53,7 @@ cd ..
 
 1. Generate descriptions and inference them:
 ```sh
+# for rosbank dataset
 bash scripts/run_scenario_rosbank.sh
 ```
 2. Generate statisctics
