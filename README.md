@@ -25,7 +25,7 @@ datasets while remaining deployable in latencysensitive environments.
 
 
 ### environment setup (without Docker)
-
+```sh
 # llm-foundry env
 cd llm-foundry
 python3 -m venv llmfoundry-venv
@@ -41,3 +41,4 @@ python3 -m venv ptls-venv
 source ptls-venv/bin/activate
 pip install pytorch-lifestream
 cd ..
+```
