@@ -49,7 +49,7 @@ cd ..
 ```
 
 
-### llm-foundry training
+### run LATTE
 
 1. Generate descriptions and inference them:
 ```sh
