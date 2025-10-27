@@ -22,11 +22,15 @@ datasets while remaining deployable in latencysensitive environments.
 
 
 ## usage
-
-
 ### environment setup (without Docker)
 ```sh
+
+git clone https://github.com/tsebaka/LATTE.git
+cd LATTE
+cd source
+
 # llm-foundry env
+git clone https://github.com/mosaicml/llm-foundry.git
 cd llm-foundry
 python3 -m venv llmfoundry-venv
 source llmfoundry-venv/bin/activate
@@ -36,9 +40,12 @@ pip install deepspeed=0.15.4
 cd ..
 
 # ptls env
+git clone https://github.com/pytorch-lifestream/ptls-experiments.git
 cd ptls-experiments
 python3 -m venv ptls-venv
 source ptls-venv/bin/activate
 pip install pytorch-lifestream
 cd ..
 ```
+
+
