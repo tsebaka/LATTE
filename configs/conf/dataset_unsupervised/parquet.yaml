@@ -1,0 +1,31 @@
+train:
+  _target_: ptls.data_load.datasets.MemoryMapDataset
+  data:
+    _target_: ptls.data_load.datasets.parquet_dataset.ParquetDataset
+    i_filters:
+      - _target_: ptls.data_load.iterable_processing.SeqLenFilter
+        min_seq_len: 10
+      - _target_: ptls.data_load.iterable_processing.IdFilterDf
+        df_relevant_ids:
+          _target_: pandas.read_csv
+          filepath_or_buffer: data/rosbank/train_ids.csv
+    data_files:
+      _target_: ptls.data_load.datasets.parquet_file_scan
+      file_path: data/rosbank/ptls/train_trx_with_stats_embs_new.parquet
+      return_part: train
+      valid_rate: 0.05
+
+valid:
+  _target_: ptls.data_load.datasets.MemoryMapDataset
+  data:
+    _target_: ptls.data_load.datasets.parquet_dataset.ParquetDataset
+    i_filters:
+      - _target_: ptls.data_load.iterable_processing.IdFilterDf
+        df_relevant_ids:
+          _target_: pandas.read_csv
+          filepath_or_buffer: data/rosbank/target_ids.csv
+    data_files:
+      _target_: ptls.data_load.datasets.parquet_file_scan
+      file_path: data/rosbank/ptls/train_trx_with_stats_embs_new.parquet
+      return_part: valid
+      valid_rate: 0.05

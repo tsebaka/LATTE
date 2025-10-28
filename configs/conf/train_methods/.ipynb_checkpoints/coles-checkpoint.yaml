@@ -1,0 +1,47 @@
+data_module:
+  _target_: ptls.frames.PtlsDataModule
+  train_data:
+    _target_: ptls.frames.coles.ColesDataset
+    splitter:
+      _target_: ptls.frames.coles.split_strategy.SampleSlices
+      split_count: 5
+      cnt_min: 50
+      cnt_max: 90
+      # short_seq_crop_rate: 0.7
+    data: ${dataset_unsupervised.train}
+  valid_data:
+    _target_: ptls.frames.coles.ColesDataset
+    splitter:
+      _target_: ptls.frames.coles.split_strategy.SampleSlices
+      split_count: 5
+      cnt_min: 25
+      cnt_max: 90
+      short_seq_crop_rate: 0.5
+    data: ${dataset_unsupervised.valid}
+  train_batch_size: 128
+  train_num_workers: 8
+  valid_batch_size: 512
+  valid_num_workers: 8
+
+pl_module:
+  _target_: ptls.frames.coles.CoLESModule
+  validation_metric:
+    _target_: ptls.frames.coles.metric.BatchRecallTopK
+    K: 4
+    metric: cosine
+  seq_encoder:
+    _target_: congpt.modules.seq_encoder.SeqEncoder
+    trx_encoder: ${trx_encoder}
+    seq_encoder: ${seq_encoder}
+  head:
+    _target_: ptls.nn.Head
+    use_norm_encoder: true 
+  loss:
+    _target_: ptls.frames.coles.losses.ContrastiveLoss
+    margin: 0.5
+    sampling_strategy:
+      _target_: ptls.frames.coles.sampling_strategies.HardNegativePairSelector
+      neg_count: 5
+    # _target_: ptls.frames.coles.losses.SoftmaxLoss
+  optimizer_partial: ${optimizer_partial}
+  lr_scheduler_partial: ${lr_scheduler_partial}

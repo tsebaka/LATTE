@@ -1,0 +1,74 @@
+defaults:
+  - _self_
+  - train_methods/coles@coles
+  - train_methods/con_embs@con_embs
+  - dataset_unsupervised/parquet
+  - inference/default
+  - validation/embedding_validation
+
+seed: 42
+finetune: true
+logger_name: con_embs_1
+model_path: models/${logger_name}.pt
+finetuned_model_path: models/${logger_name}_finetuned.pt
+embed_file_name: ${logger_name}
+
+trainer: 
+  accelerator: gpu
+  devices: 1
+  max_epochs: 5
+  check_val_every_n_epoch: 1
+  deterministic: true
+  # checkpoints_every_n_val_epochs: 1
+  # limit_train_batches: 1
+
+finetune_trainer: 
+  accelerator: gpu
+  devices: 4
+  max_epochs: 4
+  check_val_every_n_epoch: 1
+  deterministic: true
+  checkpoints_every_n_val_epochs: 1
+
+seq_encoder:
+  _target_: ptls.nn.RnnEncoder
+  input_size: 49
+  hidden_size: 1024
+  type: gru
+  num_layers: 1
+  bidir: false
+  trainable_starter: static
+
+trx_encoder:
+  _target_: ptls.nn.TrxEncoder
+  norm_embeddings: false
+  embeddings:
+    mcc:
+      in: 300
+      out: 16
+    channel_type:
+      in: 16
+      out: 8
+    currency:
+      in: 16
+      out: 8
+    trx_category:
+      in: 300
+      out: 16
+  numeric_values:
+    amount: identity  
+  # linear_projection_size: 512
+
+optimizer_partial:
+  _partial_: true
+  # _target_: lion_pytorch.Lion
+  _target_: torch.optim.AdamW
+  lr: 0.001
+  weight_decay: 0.0001
+
+lr_scheduler_partial:
+  _partial_: true
+  _target_: torch.optim.lr_scheduler.StepLR
+  step_size: 5
+  gamma: 0.9025
+

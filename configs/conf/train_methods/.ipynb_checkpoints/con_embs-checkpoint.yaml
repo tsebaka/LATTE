@@ -1,0 +1,52 @@
+data_module:
+  _target_: ptls.frames.PtlsDataModule
+  train_data:
+    _target_: congpt.modules.contrastive_embs_dataset.ContrastiveEmbsDataset
+    col_embs: embs
+    splitter:
+      _target_: ptls.frames.coles.split_strategy.SampleSlices
+      split_count: 1
+      cnt_min: 1000
+      cnt_max: 1000
+    data: ${dataset_unsupervised.train}
+  valid_data:
+    _target_: congpt.modules.contrastive_embs_dataset.ContrastiveEmbsDataset
+    col_embs: embs
+    splitter:
+      _target_: ptls.frames.coles.split_strategy.SampleSlices
+      split_count: 1
+      cnt_min: 1000
+      cnt_max: 1000
+    data: ${dataset_unsupervised.valid}
+  train_batch_size: 128
+  train_num_workers: 8
+  valid_batch_size: 128
+  valid_num_workers: 8
+
+pl_module:
+  _target_: congpt.modules.contrastive_embs_module.ContrastiveEmbsModule
+  seq_encoder:
+    _target_: congpt.modules.seq_encoder.SeqEncoder
+    trx_encoder: ${trx_encoder}
+    seq_encoder: ${seq_encoder}
+  pretrained_model_path: /home/jovyan/sakhno/conGPT/scenario_rosbank/models/coles_hs1024_lr0.0036808580473142775_cnt_min50_cnt_max90.pt
+  embs_head_lr: 0.001
+  rnn_head_lr: 0.001
+  seq_encoder_lr: 0.00
+  embs_head:
+    _target_: ptls.nn.Head
+    input_size: 128
+    hidden_layers_sizes: 
+      - 512
+    use_norm_encoder: true 
+  rnn_head:
+    _target_: ptls.nn.Head
+    input_size: 1024
+    hidden_layers_sizes: 
+      - 512
+    use_norm_encoder: true 
+  loss:
+    _target_: congpt.utils.losses.InfoNCELoss
+    # lambda_orth: 0.001
+  optimizer_partial: ${optimizer_partial}
+  # lr_scheduler_partial: ${lr_scheduler_partial}
